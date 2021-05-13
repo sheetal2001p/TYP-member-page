@@ -20,6 +20,7 @@ function Admin() {
     });
 
     const Members = useSelector(state => state.MemberReducer.members);
+    console.log('Members: ', Members);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -29,7 +30,6 @@ function Admin() {
 
     const getMembersAPI = async () => {
         const members = await get("http://localhost:4000/getAllMembers");
-        // console.log("data",members.data);
         dispatch(setValue(members.data))
     }
 
@@ -77,31 +77,19 @@ function Admin() {
                 ["link"]: "",
 
             });
-            getMembersAPI();
+            // getMembersAPI();
+            dispatch(setValue(res.data))
         }
         catch (e) {
             console.log(e);
         }
     }
-    const isActivate = async(member)=>{
-        console.log("calling");
-        const isActive = member.isActive?false:true;
-        // console.log(isActive);
-        console.log(member.name)
-        setFormData({
-            ...formData,
-            ["name"]: member.name,
-            ["position"]: member.position,
-            ["image"]: member.image,
-            ["link"]: member.link,
-            ["isActive"]:isActive
-        });
-
-      console.log(formData);
-      console.log(member.name)
-
+    const isActivate = async(isActive, member)=>{
+        console.log('isActive, member: ', isActive, member);
         try {
-            const res = await put(`http://localhost:4000/updateMember/${member._id}`,formData );
+            const res = await put(`http://localhost:4000/updateMember/${member._id}`,{
+                isActive
+            } );
             console.log(res);
             getMembersAPI();
         }
@@ -138,11 +126,13 @@ function Admin() {
                                     <td>{member.image}</td>
                                     <td>{member.link}</td>
                                     <td><BootstrapSwitchButton
+                                        key={member._id}
                                         checked={member.isActive}
                                         onlabel='active'
                                         offlabel='not active'
-                                        onChange={()=>isActivate(member)}
+                                        onChange={(e)=>{isActivate(!member.isActive, member);}}
                                     /></td>
+                                    {/* <td><Button variant="info" onClick={(e) => { console.log('Here is member isActive field onclick : ', e.target.value);  }}>{member.isActive ? "Deactivate" : "Activate"}</Button></td> */}
                                     <td><Button variant="info" onClick={() => { editMember(member) }}>Edit</Button></td>
                                 </tr>
                             )

@@ -32,6 +32,7 @@ const getAllMembersService = async()=>{
 }
 
 const updateMemberService = async(_id,data)=>{
+    console.log('data in updateMemberService: ', data);
     
     try{
         const member = await Member.findByIdAndUpdate(
@@ -43,7 +44,9 @@ const updateMemberService = async(_id,data)=>{
             const error = new HttpError(404,"Member Not Found")
             return {error};
         }
-        return {data:member};
+        console.log("Member updated successfully");
+        const allMembers = await Member.find({}) ;
+        return {data:allMembers};
     }
     catch(err){
         
